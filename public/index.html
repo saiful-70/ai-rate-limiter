@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Rate Limiter - Demo Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .login-section, .chat-section {
+            padding: 30px;
+        }
+
+        .login-section {
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #2196F3;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-display {
+            background: #e3f2fd;
+            border: 1px solid #2196F3;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .status-display h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .chat-messages {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #fafafa;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            max-width: 85%;
+        }
+
+        .message.user {
+            background: #2196F3;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.ai {
+            background: white;
+            border: 1px solid #ddd;
+            margin-right: auto;
+        }
+
+        .message.error {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            color: #c62828;
+        }
+
+        .message.system {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            color: #e65100;
+            text-align: center;
+            margin: 10px auto;
+            max-width: 100%;
+        }
+
+        .demo-users {
+            background: #f0f8ff;
+            border: 1px solid #2196F3;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .demo-users h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .demo-user {
+            background: white;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .demo-user:hover {
+            background: #e3f2fd;
+        }
+
+        .demo-user small {
+            color: #666;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .rate-limit-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .rate-limit-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .rate-limit-card .number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .rate-limit-card .label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .login-section {
+                border-right: none;
+                border-bottom: 1px solid #dee2e6;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .loading {
+            opacity: 0.6;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff40;
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Chat Rate Limiter</h1>
+            <p>Interactive demo with authentication & rate limiting</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Login Section -->
+            <div class="login-section">
+                <h2 class="section-title">🔐 Authentication</h2>
+                
+                <div class="demo-users">
+                    <h4>Demo Users (Click to Login)</h4>
+                    <div class="demo-user" onclick="quickLogin('freeuser', 'password123')">
+                        <strong>freeuser</strong>
+                        <small>Password: password123 | Limit: 10 requests/hour</small>
+                    </div>
+                    <div class="demo-user" onclick="quickLogin('premiumuser', 'password123')">
+                        <strong>premiumuser</strong>
+                        <small>Password: password123 | Limit: 50 requests/hour</small>
+                    </div>
+                    <div class="demo-user" onclick="loginAsGuest()">
+                        <strong>Guest User</strong>
+                        <small>No password required | Limit: 3 requests/hour</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Enter username or leave empty for guest">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter password">
+                </div>
+
+                <button class="btn" onclick="login()" id="loginBtn">
+                    Login
+                </button>
+
+                <button class="btn" onclick="logout()" id="logoutBtn" style="background: #f44336; display: none;">
+                    Logout
+                </button>
+
+                <div class="status-display" id="userStatus" style="display: none;">
+                    <h4>👤 User Status</h4>
+                    <div id="userInfo"></div>
+                    <div class="rate-limit-info" id="rateLimitInfo"></div>
+                </div>
+
+                <button class="btn" onclick="checkStatus()" id="statusBtn" style="background: #4CAF50; display: none;">
+                    Refresh Status
+                </button>
+            </div>
+
+            <!-- Chat Section -->
+            <div class="chat-section">
+                <h2 class="section-title">💬 AI Chat</h2>
+                
+                <div class="form-group">
+                    <label for="aiModel">AI Model:</label>
+                    <select id="aiModel">
+                        <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (Fast)</option>
+                        <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile (Quality)</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7B (32k context)</option>
+                    </select>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message system">
+                        👋 Welcome! Please login to start chatting with AI.
+                        <br><br>
+                        <strong>Rate Limits:</strong><br>
+                        • Guest: 3 requests/hour<br>
+                        • Free: 10 requests/hour<br>
+                        • Premium: 50 requests/hour
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="messageInput">Your Message:</label>
+                    <textarea id="messageInput" rows="3" placeholder="Type your message here..." disabled></textarea>
+                </div>
+
+                <button class="btn" onclick="sendMessage()" id="sendBtn" disabled>
+                    Send Message
+                </button>
+
+                <button class="btn" onclick="clearChat()" style="background: #9E9E9E;">
+                    Clear Chat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let userToken = null;
+        let currentUser = null;
+        const API_BASE = '/api';
+
+        // DOM elements
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const statusBtn = document.getElementById('statusBtn');
+        const userStatus = document.getElementById('userStatus');
+        const userInfo = document.getElementById('userInfo');
+        const rateLimitInfo = document.getElementById('rateLimitInfo');
+
+        // Utility functions
+        function addMessage(content, type = 'system', isHtml = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            if (isHtml) {
+                messageDiv.innerHTML = content;
+            } else {
+                messageDiv.textContent = content;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function setLoading(element, isLoading, originalText = '') {
+            if (isLoading) {
+                element.disabled = true;
+                element.innerHTML = `<span class="spinner"></span> Loading...`;
+                element.classList.add('loading');
+            } else {
+                element.disabled = false;
+                element.innerHTML = originalText;
+                element.classList.remove('loading');
+            }
+        }
+
+        function updateUI(loggedIn = false) {
+            if (loggedIn) {
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+                statusBtn.style.display = 'block';
+                userStatus.style.display = 'block';
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send Message';
+            } else {
+                loginBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+                statusBtn.style.display = 'none';
+                userStatus.style.display = 'none';
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+                sendBtn.textContent = 'Login Required';
+                userToken = null;
+                currentUser = null;
+            }
+        }
+
+        // API functions
+        async function makeRequest(url, options = {}) {
+            try {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                };
+
+                if (userToken) {
+                    headers.Authorization = `Bearer ${userToken}`;
+                }
+
+                const response = await fetch(API_BASE + url, {
+                    ...options,
+                    headers
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+
+                return data;
+            } catch (error) {
+                console.error('API Request failed:', error);
+                throw error;
+            }
+        }
+
+        // Authentication functions
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username) {
+                loginAsGuest();
+                return;
+            }
+
+            setLoading(loginBtn, true, 'Login');
+
+            try {
+                const response = await makeRequest('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password })
+                });
+
+                userToken = response.token;
+                currentUser = response.user;
+                
+                addMessage(`✅ Welcome back, ${currentUser.username}! (${currentUser.type} user)`, 'system');
+                updateUI(true);
+                await checkStatus();
+
+            } catch (error) {
+                addMessage(`❌ Login failed: ${error.message}`, 'error');
+            } finally {
+                setLoading(loginBtn, false, 'Login');
+            }
+        }
+
+        function quickLogin(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+            login();
+        }
+
+        function loginAsGuest() {
+            userToken = null;
+            currentUser = { username: 'Guest', type: 'guest' };
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            addMessage(`👋 Welcome, Guest! You have 3 requests per hour.`, 'system');
+            updateUI(true);
+            checkStatus();
+        }
+
+        function logout() {
+            addMessage(`👋 Goodbye, ${currentUser?.username || 'Guest'}!`, 'system');
+            updateUI(false);
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Status checking
+        async function checkStatus() {
+            try {
+                const response = await makeRequest('/status');
+                
+                userInfo.innerHTML = `
+                    <strong>User:</strong> ${currentUser?.username || 'Guest'} (${response.user_type})<br>
+                    <strong>Status:</strong> Active
+                `;
+
+                rateLimitInfo.innerHTML = `
+                    <div class="rate-limit-card">
+                        <div class="number">${response.remaining_requests}</div>
+                        <div class="label">Remaining</div>
+                    </div>
+                    <div class="rate-limit-card">
+                        <div class="number">${response.total_requests}</div>
+                        <div class="label">Total Limit</div>
+                    </div>
+                    <div class="rate-limit-card">
+                        <div class="number">${Math.ceil((new Date(response.reset_time) - new Date()) / 1000 / 60)}</div>
+                        <div class="label">Minutes Until Reset</div>
+                    </div>
+                `;
+
+            } catch (error) {
+                addMessage(`❌ Status check failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Chat functions
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            const model = document.getElementById('aiModel').value;
+
+            if (!message) {
+                addMessage('❌ Please enter a message', 'error');
+                return;
+            }
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            messageInput.value = '';
+
+            setLoading(sendBtn, true, 'Send Message');
+
+            try {
+                const response = await makeRequest('/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({ message, model })
+                });
+
+                // Add AI response
+                addMessage(response.message, 'ai');
+                
+                // Update rate limit info
+                if (response.remaining_requests !== undefined) {
+                    const statusMsg = `📊 Remaining requests: ${response.remaining_requests} | Model: ${response.model_used || model}`;
+                    addMessage(statusMsg, 'system');
+                    
+                    // Update status display
+                    await checkStatus();
+                }
+
+            } catch (error) {
+                if (error.message.includes('Too many requests')) {
+                    addMessage(`🚫 Rate limit exceeded! ${error.message}`, 'error');
+                } else {
+                    addMessage(`❌ Error: ${error.message}`, 'error');
+                }
+                
+                // Still try to update status to show current limits
+                try {
+                    await checkStatus();
+                } catch (statusError) {
+                    console.error('Status update failed:', statusError);
+                }
+            } finally {
+                setLoading(sendBtn, false, 'Send Message');
+            }
+        }
+
+        function clearChat() {
+            chatMessages.innerHTML = `
+                <div class="message system">
+                    💬 Chat cleared. Ready for new conversation!
+                </div>
+            `;
+        }
+
+        // Event listeners
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!sendBtn.disabled) {
+                    sendMessage();
+                }
+            }
+        });
+
+        document.getElementById('username').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('password').focus();
+            }
+        });
+
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        // Initialize
+        updateUI(false);
+
+        // Auto-check status every 30 seconds if logged in
+        setInterval(() => {
+            if (userToken || currentUser?.type === 'guest') {
+                checkStatus();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

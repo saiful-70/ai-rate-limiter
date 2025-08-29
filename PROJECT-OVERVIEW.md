@@ -19,6 +19,9 @@ Rate Limiter/
 │   ├── 🔐 auth.js               # JWT authentication middleware
 │   └── ⏱️  rateLimiter.js       # Fixed window rate limiting logic
 │
+├── public/
+│   └── 🌐 index.html            # Beautiful web interface (NEW!)
+│
 ├── routes/
 │   ├── 🔐 auth.js               # Authentication endpoints (login, register)
 │   ├── 💬 chat.js               # AI chat endpoint with rate limiting
@@ -33,6 +36,14 @@ Rate Limiter/
 ```
 
 ## 🔑 Key Features Implemented
+
+### ✅ Web User Interface
+**Interactive Web Dashboard**: Beautiful, responsive UI for testing the API
+**Authentication Flow**: Login/logout with demo users or guest access
+**Real-time Chat**: Send messages to AI with live rate limit feedback
+**Status Monitoring**: Live display of remaining requests and reset times
+**Model Selection**: Choose between different Groq AI models
+**Mobile Responsive**: Works perfectly on desktop and mobile devices
 
 ### ✅ Rate Limiting
 - **Guest Users**: 3 requests/hour (tracked by IP)
@@ -49,19 +60,22 @@ Rate Limiter/
 - Secure password hashing with bcrypt
 
 ### ✅ AI Integration
-**Vercel Provider via Vercel AI SDK**: Real responses using Vercel's v0 API
+**Groq Provider via Vercel AI SDK**: Real responses using Groq's LLaMA models
 **Optional Demo Mode**: Can be enabled during development/tests
-**Model Support**: v0-1.5-md, v0-1.5-lg, v0-1.0-md (legacy)
+**Model Support**: llama-3.1-8b-instant, llama-3.1-70b-versatile, mixtral-8x7b-32768
 **Error Handling**: Proper error responses for API issues
 
 ### ✅ API Endpoints
-1. **Configure VERCEL_API_KEY** in `.env` for real AI responses
-2. `POST /api/auth/login` - Get user token ⭐
-3. `GET /api/status` - Check remaining requests ⭐
-4. `GET /api/limits` - Get rate limits configuration
-5. `GET /api/health` - Health check and system info
-6. `POST /api/auth/register` - Register new users
-7. `GET /api/auth/users` - Demo users info
+1. **Configure GROQ_API_KEY** in `.env` for real AI responses
+2. `GET /` - Web interface (new!) 🌟
+3. `POST /api/auth/login` - Get user token ⭐
+4. `POST /api/chat` - Send message to AI (rate limited) ⭐
+5. `GET /api/status` - Check remaining requests ⭐
+6. `GET /api/limits` - Get rate limits configuration
+7. `GET /api/health` - Health check and system info
+8. `POST /api/auth/register` - Register new users
+9. `GET /api/auth/users` - Demo users info
+10. `GET /api/chat/models` - Available Groq models
 
 ### ✅ Testing & Quality Assurance
 - **Complete Test Suite**: 20+ test cases with Jest
@@ -72,7 +86,17 @@ Rate Limiter/
 
 ## 🎯 How to Use
 
-### 1. Quick Start
+### 1. Quick Start (Web Interface)
+```bash
+cd "/home/saiful/Desktop/poridhi/Exam/Rate Limiter"
+npm install
+npm start
+
+# Open your browser and go to:
+# http://localhost:3000
+```
+
+### 2. Quick Start (API Only)
 ```bash
 cd "/home/saiful/Desktop/poridhi/Exam/Rate Limiter"
 npm install

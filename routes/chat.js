@@ -31,11 +31,11 @@ const validateMessage = (req, res, next) => {
  */
 router.post('/chat', authenticateToken, validateMessage, rateLimitMiddleware, async (req, res) => {
   try {
-  const { message, model = 'llama-3.1-8b-instant' } = req.body;
+    const { message, model = 'llama-3.1-8b-instant' } = req.body;
 
-    // Check if OpenAI API key is configured
-  // Only mock in tests, or when no GROQ key and mock explicitly enabled
-  if (process.env.NODE_ENV === 'test' || (!process.env.GROQ_API_KEY && process.env.USE_MOCK_AI === 'true')) {
+    // Check if Groq API key is configured
+    // Only mock in tests, or when no Groq key and mock explicitly enabled
+    if (process.env.NODE_ENV === 'test' || (!process.env.GROQ_API_KEY && process.env.USE_MOCK_AI === 'true')) {
       // Mock AI response for demo purposes
       const mockResponses = [
         "Hello! I'm a mock AI assistant. In production, this would be powered by Groq via the AI SDK.",

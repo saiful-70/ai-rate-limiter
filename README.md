@@ -1,23 +1,28 @@
-# AI Chat Rate Limiter with Vercel AI SDK (Vercel Provider)
+# AI Chat Rate Limiter with Vercel AI SDK (Groq Provider)
 
-A sophisticated rate limiting system for AI chatbots that controls usage costs by limiting requests based on user types. Built with Express.js and integrated with Vercel AI SDK using the Vercel v0 API.
+A sophisticated rate limiting system for AI chatbots that controls usage costs by limiting requests based on user types. Built with Express.js and integrated with Vercel AI SDK using Groq's powerful LLaMA models.
 
 ## 🚀 Features
 
+- **Beautiful Web Interface**: Interactive dashboard for testing and monitoring
 - **Fixed Window Rate Limiting**: 1-hour windows for different user types
 - **Multi-tier Rate Limits**:
   - 🔓 Guest users: 3 requests/hour (tracked by IP)
   - 👤 Free users: 10 requests/hour (tracked by user ID)
   - ⭐ Premium users: 50 requests/hour (tracked by user ID)
 - **Cost-Effective**: Rate limits are checked BEFORE calling AI APIs
-- **Vercel AI SDK + v0 API**: Real AI responses via Vercel's v0 provider
+- **Groq AI Integration**: Real AI responses via Groq's LLaMA models
 - **JWT Authentication**: Secure user authentication system
 - **Comprehensive Testing**: Full test suite with Jest
 - **Clean API**: RESTful endpoints with clear error messages
+- **Mobile Responsive**: Works perfectly on all devices
 
 ## 📋 API Endpoints
 
-### Core Endpoints
+### Web Interface
+- `GET /` - Interactive web dashboard with authentication and chat
+
+### Core API Endpoints
 - `POST /api/chat` - Send message to AI (rate limited)
 - `POST /api/auth/login` - Authenticate and get JWT token
 - `GET /api/status` - Check remaining requests for current user
@@ -27,9 +32,11 @@ A sophisticated rate limiting system for AI chatbots that controls usage costs b
 - `GET /api/auth/users` - Get demo users info
 - `GET /api/limits` - Get rate limits configuration
 - `GET /api/health` - Health check with system info
-- `GET /api/chat/models` - Available AI models
+- `GET /api/chat/models` - Available Groq AI models
 
-## 🛠️ Installation
+## 🛠️ Installation & Usage
+
+### Method 1: Web Interface (Recommended)
 
 1. **Clone and setup**:
 ```bash
@@ -40,14 +47,22 @@ npm install
 2. **Environment Setup**:
 ```bash
 cp .env.example .env
-# Edit .env file with your VERCEL_API_KEY from https://v0.dev/chat/settings/keys
-# Note: Requires Premium or Team plan with usage-based billing
+# Edit .env file with your GROQ_API_KEY from https://console.groq.com/keys
 ```
 
 3. **Start the server**:
 ```bash
-npm run dev
+npm start
+# Open http://localhost:3000 in your browser
 ```
+
+4. **Use the Web Interface**:
+   - Click on demo users to quickly login
+   - Or login as guest for IP-based rate limiting
+   - Chat with AI and see rate limits in real-time
+   - Monitor your usage with live status updates
+
+### Method 2: API Only
 
 ## 🔧 Configuration
 
@@ -57,7 +72,7 @@ npm run dev
 NODE_ENV=development
 PORT=3000
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-VERCEL_API_KEY=your-vercel-api-key-here
+GROQ_API_KEY=your-groq-api-key-here
 
 # Rate Limiting Configuration
 GUEST_LIMIT=3
@@ -210,9 +225,9 @@ npm test -- --coverage
    - Verify environment variables
 
 3. **AI responses not working**
-  - Ensure VERCEL_API_KEY is set correctly
-  - Check Vercel API quota and billing (requires Premium/Team plan)
-  - Verify API key from https://v0.dev/chat/settings/keys
+  - Ensure GROQ_API_KEY is set correctly
+  - Check Groq API quota and billing
+  - Verify API key from https://console.groq.com/keys
 
 ### Debug Endpoints
 ```bash
