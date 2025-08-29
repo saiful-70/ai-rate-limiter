@@ -16,11 +16,10 @@
     "chatbot",
     "express"
   ],
-  "author": "Your Name",
+  "author": "Saiful Islam",
   "license": "MIT",
   "dependencies": {
     "@ai-sdk/groq": "^2.0.16",
-    "@ai-sdk/vercel": "^1.0.13",
     "ai": "^5.0.27",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
