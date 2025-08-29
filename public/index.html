@@ -284,7 +284,7 @@
             <div class="login-section">
                 <h2 class="section-title">🔐 Authentication</h2>
                 
-                <div class="demo-users">
+                <div class="demo-users" id="demoUsers">
                     <h4>Demo Users (Click to Login)</h4>
                     <div class="demo-user" onclick="quickLogin('freeuser', 'password123')">
                         <strong>freeuser</strong>
@@ -300,12 +300,12 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="usernameGroup">
                     <label for="username">Username:</label>
                     <input type="text" id="username" placeholder="Enter username or leave empty for guest">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="passwordGroup">
                     <label for="password">Password:</label>
                     <input type="password" id="password" placeholder="Enter password">
                 </div>
@@ -322,6 +322,11 @@
                     <h4>👤 User Status</h4>
                     <div id="userInfo"></div>
                     <div class="rate-limit-info" id="rateLimitInfo"></div>
+                </div>
+
+                <div class="status-display" id="welcomeMessage" style="display: none; background: #e8f5e8; border-color: #4CAF50;">
+                    <h4>🎉 Welcome!</h4>
+                    <div id="welcomeText"></div>
                 </div>
 
                 <button class="btn" onclick="checkStatus()" id="statusBtn" style="background: #4CAF50; display: none;">
@@ -385,6 +390,8 @@
         const userStatus = document.getElementById('userStatus');
         const userInfo = document.getElementById('userInfo');
         const rateLimitInfo = document.getElementById('rateLimitInfo');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const welcomeText = document.getElementById('welcomeText');
 
         // Utility functions
         function addMessage(content, type = 'system', isHtml = false) {
@@ -414,19 +421,48 @@
         }
 
         function updateUI(loggedIn = false) {
+            const demoUsers = document.getElementById('demoUsers');
+            const usernameGroup = document.getElementById('usernameGroup');
+            const passwordGroup = document.getElementById('passwordGroup');
+            
             if (loggedIn) {
+                // Hide login elements
                 loginBtn.style.display = 'none';
+                demoUsers.style.display = 'none';
+                usernameGroup.style.display = 'none';
+                passwordGroup.style.display = 'none';
+                
+                // Show logged-in elements
                 logoutBtn.style.display = 'block';
                 statusBtn.style.display = 'block';
                 userStatus.style.display = 'block';
+                welcomeMessage.style.display = 'block';
                 messageInput.disabled = false;
                 sendBtn.disabled = false;
                 sendBtn.textContent = 'Send Message';
+                
+                // Update welcome message
+                if (currentUser) {
+                    const userType = currentUser.type || 'guest';
+                    const limits = { guest: 3, free: 10, premium: 50 };
+                    welcomeText.innerHTML = `
+                        You're logged in as <strong>${currentUser.username}</strong> (${userType} user).<br>
+                        You can send up to <strong>${limits[userType]} messages per hour</strong>.<br>
+                        Start chatting with AI using the form on the right! 🚀
+                    `;
+                }
             } else {
+                // Show login elements
                 loginBtn.style.display = 'block';
+                demoUsers.style.display = 'block';
+                usernameGroup.style.display = 'block';
+                passwordGroup.style.display = 'block';
+                
+                // Hide logged-in elements
                 logoutBtn.style.display = 'none';
                 statusBtn.style.display = 'none';
                 userStatus.style.display = 'none';
+                welcomeMessage.style.display = 'none';
                 messageInput.disabled = true;
                 sendBtn.disabled = true;
                 sendBtn.textContent = 'Login Required';

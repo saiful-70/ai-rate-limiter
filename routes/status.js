@@ -11,7 +11,7 @@ const router = express.Router();
  */
 router.get('/status', authenticateToken, (req, res) => {
   try {
-    const ip = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
+    const ip = req.ip || req.socket.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
     const status = rateLimiter.getStatus(req.user, ip);
 
     res.json({
