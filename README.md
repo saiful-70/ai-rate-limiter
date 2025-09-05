@@ -201,7 +201,7 @@ npm test -- --coverage
 ### Environment Setup
 1. Set `NODE_ENV=production`
 2. Use a strong `JWT_SECRET`
-3. Configure real `OPENAI_API_KEY`
+3. Configure real `GROQ_API_KEY`
 4. Set appropriate rate limits
 5. Use HTTPS in production
 
